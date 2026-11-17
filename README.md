@@ -18,7 +18,7 @@
 - **📖 日志本**：把属于同一条大故事的事件收进一本本日志，按章节排序；游戏里直接接续的故事会被自动发现，一键建成日志本。
 - **翻译**：开着 Chrome 自带翻译（或沉浸式翻译等）玩时，逐项保存译文，可切换“原文 / 译文 / 对照”。
 - **游戏日志联动**：在游戏里“保存到日志”的条目会被标记；导入游戏日志时会和完整记录合并。
-- **随时暂停**：右下角的记录开关（快捷键 Alt+K）。
+- **随时暂停**：右下角的记录开关（快捷键 Alt+K）。按钮可以按住拖到屏幕任意位置，也可以切成只显示图标的紧凑样式，手机上不挡游戏。
 - **导出**：网页、Markdown、TXT、完整备份 JSON；附带离线阅读器，不开游戏也能读。
 
 ## 安装
@@ -36,6 +36,17 @@
 
 装好 [Tampermonkey](https://www.tampermonkey.net/) 后，打开 **[安装链接](https://raw.githubusercontent.com/Dobo233/fallen-london-chronicle/main/dist/fallen-london-chronicle.user.js)** 点“安装”。之后会自动更新。
 （新版 Chrome 需要在 Tampermonkey 的扩展详情里打开“允许运行用户脚本”。插件和脚本二选一即可，两者的记录存在同一个地方。）
+
+### 其他浏览器与手机
+
+| 浏览器 | 怎么装 |
+|---|---|
+| Edge、Brave、Opera、Vivaldi 等 Chromium 内核浏览器（电脑） | 和 Chrome 一样用方式一（扩展管理页地址分别是 `edge://extensions`、`brave://extensions`、`opera://extensions`、`vivaldi:extensions`） |
+| Firefox（电脑，128+） | 推荐方式二（Tampermonkey 或 Violentmonkey 脚本）。也可以临时加载 [Firefox 版插件](https://github.com/Dobo233/fallen-london-chronicle/raw/main/dist/fallen-london-chronicle-firefox.zip)，见[使用说明](docs/使用说明.md#其他浏览器) |
+| **安卓手机** | **手机版 Chrome 不支持任何扩展**。推荐装 **Firefox 安卓版** → 附加组件里装 Tampermonkey → 打开[脚本安装链接](https://raw.githubusercontent.com/Dobo233/fallen-london-chronicle/main/dist/fallen-london-chronicle.user.js) |
+| iPhone / iPad | 未测试。可以试试 Safari 的 “Userscripts” 扩展加载脚本 |
+
+手机上的详细步骤和其他可选浏览器见 [使用说明 · 在手机上使用](docs/使用说明.md#在手机上使用)。
 
 ### 离线阅读器
 
@@ -80,6 +91,6 @@ python build.py        # 从 src/ 生成 dist/（插件文件夹与 zip、Tamper
 - Export to HTML, Markdown, TXT and JSON backup; offline reader included
 - All data stays in your own browser. The tool never alters or sends game requests (except a read-only fetch of your own journal when you ask for it)
 
-The interface is in Chinese. Install: download [`fallen-london-chronicle-chrome.zip`](https://github.com/Dobo233/fallen-london-chronicle/raw/main/dist/fallen-london-chronicle-chrome.zip), unzip it, then load it via `chrome://extensions` → Developer mode → *Load unpacked*; or install the [userscript](https://raw.githubusercontent.com/Dobo233/fallen-london-chronicle/main/dist/fallen-london-chronicle.user.js) with Tampermonkey.
+The interface is in Chinese. Install: download [`fallen-london-chronicle-chrome.zip`](https://github.com/Dobo233/fallen-london-chronicle/raw/main/dist/fallen-london-chronicle-chrome.zip), unzip it, then load it via `chrome://extensions` → Developer mode → *Load unpacked*; or install the [userscript](https://raw.githubusercontent.com/Dobo233/fallen-london-chronicle/main/dist/fallen-london-chronicle.user.js) with Tampermonkey / Violentmonkey (works in Firefox too). A [Firefox build](https://github.com/Dobo233/fallen-london-chronicle/raw/main/dist/fallen-london-chronicle-firefox.zip) of the extension is also provided (load it via `about:debugging` until a signed version is published). On Android, Chrome has no extension support; use Firefox for Android with Tampermonkey and the userscript. The corner buttons can be dragged anywhere so they don't cover the game on small screens.
 
 Not affiliated with Failbetter Games. Fallen London is © Failbetter Games. MIT licensed.

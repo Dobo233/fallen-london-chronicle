@@ -848,8 +848,8 @@ var FLC = (function () {
 
     var userscript = mode === 'userscript';
     root.innerHTML =
-      (userscript ? '<div class="fabbar"><button type="button" class="fabrec" aria-pressed="true"></button>' +
-        '<div class="fab" title="沦敦故事回顾（Alt+J）">📜 回顾<span class="badge"></span></div></div>' : '') +
+      (userscript ? '<div class="fabbar"><span class="fabgrip" title="按住拖动，可把按钮移到任意位置">⋮⋮</span><button type="button" class="fabrec" aria-pressed="true"></button>' +
+        '<div class="fab" title="沦敦故事回顾（Alt+J）">📜<span class="lbl"> 回顾</span><span class="badge"></span></div></div>' : '') +
       '<div class="overlay' + (userscript ? ' hidden' : '') + '"><div class="panel">' +
       '<header>' +
       '<div class="title">沦敦故事回顾<span class="count"></span></div>' +
@@ -1361,6 +1361,7 @@ var FLC = (function () {
         try { last = +localStorage.getItem('flc-last-backup') || 0; } catch (e) {}
         settingsBox.innerHTML =
           '<label><input type="checkbox" data-k="recording"' + (s.recording !== false ? ' checked' : '') + '> <b>记录游戏中的选择</b>（关闭后暂停记录，随时可以再打开）</label>' +
+          '<label><input type="checkbox" data-k="compactFab"' + (s.compactFab ? ' checked' : '') + '> 右下角按钮只显示图标（更小，适合手机）。按钮可以按住拖到任何位置 <button type="button" data-s="fabreset">按钮放回右下角</button></label>' +
           '<label><input type="checkbox" data-k="pageText"' + (s.pageText ? ' checked' : '') + '> 同时保存翻译后的文字（开着 Chrome 翻译、沉浸式翻译等玩游戏时，逐项保存译文；用顶部的“原文 / 译文 / 对照”切换显示）</label>' +
           '<label><input type="checkbox" data-k="raw"' + (s.raw ? ' checked' : '') + '> 保存服务器原始响应（推荐：保证任何文字都不会丢失）</label>' +
           '<label><input type="checkbox" data-k="debugAll"' + (s.debugAll ? ' checked' : '') + '> 调试：把所有接口响应都单独记一条（会产生大量记录，排查问题时再开）</label>' +
@@ -1374,10 +1375,12 @@ var FLC = (function () {
       var k = e.target.getAttribute('data-k'); if (!k) return;
       cfg.settings[k] = e.target.checked; cfg.saveSettings && cfg.saveSettings();
       if (k === 'recording') syncRecording();
+      if (k === 'compactFab') syncFabLook();
     });
     settingsBox.addEventListener('click', function (e) {
       var b = e.target.closest('button[data-s]'); if (!b) return;
       var s = b.getAttribute('data-s');
+      if (s === 'fabreset') { e.preventDefault(); resetFabPos(); toast('按钮已放回右下角'); return; }
       if (s === 'backup') menu.querySelector('[data-x="json-all"]').click();
       if (s === 'clear') {
         if (!confirm('确定清空全部 ' + all.length + ' 条记录吗？建议先导出完整备份。')) return;
@@ -1392,7 +1395,7 @@ var FLC = (function () {
       var on = cfg.settings.recording !== false;
       recBtn.textContent = on ? '● 记录中' : '❚❚ 已暂停';
       recBtn.classList.toggle('paused', !on);
-      fabRec.innerHTML = on ? '<span class="dot"></span>记录中' : '<span class="bars">❚❚</span>已暂停';
+      fabRec.innerHTML = on ? '<span class="dot"></span><span class="lbl">记录中</span>' : '<span class="bars">❚❚</span><span class="lbl">已暂停</span>';
       fabRec.classList.toggle('paused', !on);
       fabRec.setAttribute('aria-pressed', on ? 'true' : 'false');
       fabRec.title = on ? '正在记录 —— 点击暂停（Alt+K）' : '记录已暂停 —— 点击恢复（Alt+K）';
@@ -1406,6 +1409,56 @@ var FLC = (function () {
     if (recBtn) recBtn.addEventListener('click', toggleRecording);
     if (fabRec) fabRec.addEventListener('click', toggleRecording);
     syncRecording();
+
+    /* 右下角按钮：可拖动到任意位置（手机上不挡游戏），位置记在本机 */
+    var fabBar = root.querySelector('.fabbar');
+    function syncFabLook() { if (fabBar) fabBar.classList.toggle('compact', !!cfg.settings.compactFab); }
+    function placeFab(pos) {
+      if (!fabBar) return;
+      if (!pos) { fabBar.style.right = fabBar.style.bottom = ''; return; }
+      var w = fabBar.offsetWidth, h = fabBar.offsetHeight;
+      var vw = document.documentElement.clientWidth || window.innerWidth, vh = window.innerHeight;
+      var r = Math.max(0, Math.min(pos.r, vw - w)), b = Math.max(0, Math.min(pos.b, vh - h));
+      fabBar.style.right = r + 'px'; fabBar.style.bottom = b + 'px';
+    }
+    function savedFabPos() { try { var p = JSON.parse(localStorage.getItem('flc-fab-pos') || 'null'); return p && isFinite(p.r) && isFinite(p.b) ? p : null; } catch (e) { return null; } }
+    function resetFabPos() { try { localStorage.removeItem('flc-fab-pos'); } catch (e) {} placeFab(null); }
+    if (fabBar) {
+      syncFabLook();
+      placeFab(savedFabPos());
+      window.addEventListener('resize', function () { placeFab(savedFabPos()); });
+      var drag = null, justDragged = false;
+      fabBar.addEventListener('pointerdown', function (e) {
+        if (e.button !== undefined && e.button !== 0) return;
+        var rc = fabBar.getBoundingClientRect();
+        var vw = document.documentElement.clientWidth || window.innerWidth;
+        drag = { id: e.pointerId, x: e.clientX, y: e.clientY, r0: vw - rc.right, b0: window.innerHeight - rc.bottom,
+                 moved: false, grip: !!e.target.closest('.fabgrip') };
+      });
+      window.addEventListener('pointermove', function (e) {
+        if (!drag || e.pointerId !== drag.id) return;
+        var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+        if (!drag.moved) {
+          if (Math.abs(dx) + Math.abs(dy) < (drag.grip ? 2 : 8)) return;
+          drag.moved = true; fabBar.classList.add('dragging');
+        }
+        if (e.cancelable) e.preventDefault();
+        placeFab({ r: drag.r0 - dx, b: drag.b0 - dy });
+      });
+      function endDrag(e) {
+        if (!drag || e.pointerId !== drag.id) return;
+        if (drag.moved) {
+          fabBar.classList.remove('dragging'); justDragged = true; setTimeout(function () { justDragged = false; }, 50);
+          var vw = document.documentElement.clientWidth || window.innerWidth, rc = fabBar.getBoundingClientRect();
+          try { localStorage.setItem('flc-fab-pos', JSON.stringify({ r: Math.round(vw - rc.right), b: Math.round(window.innerHeight - rc.bottom) })); } catch (e2) {}
+        }
+        drag = null;
+      }
+      window.addEventListener('pointerup', endDrag, true);
+      window.addEventListener('pointercancel', endDrag, true);
+      // 拖动结束时不要顺带触发“暂停记录 / 打开回顾”
+      fabBar.addEventListener('click', function (e) { if (justDragged) { e.stopPropagation(); e.preventDefault(); } }, true);
+    }
 
     /* 打开 / 关闭（游戏内） */
     function open() { overlay.classList.remove('hidden'); if (fab) { fab.querySelector('.badge').textContent = ''; sessionNew = 0; } load().then(function () { q.focus(); }); }

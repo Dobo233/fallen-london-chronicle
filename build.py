@@ -6,7 +6,7 @@ css = (src/'ui.css').read_text(encoding='utf-8')
 ui = (src/'ui.js').read_text(encoding='utf-8')
 core = (src/'core.js').read_text(encoding='utf-8')
 viewer = (src/'viewer.js').read_text(encoding='utf-8')
-VERSION = '1.5.0'
+VERSION = '1.6.0'
 REPO = 'Dobo233/fallen-london-chronicle'
 header = f"""// ==UserScript==
 // @name         沦敦故事回顾 Fallen London Chronicle
@@ -56,4 +56,22 @@ subprocess.run([sys.executable, str(ext_src/'make_icons.py'), str(ext/'icons')],
 zp = dist/'fallen-london-chronicle-chrome.zip'
 if zp.exists(): zp.unlink()
 shutil.make_archive(str(zp.with_suffix('')), 'zip', ext)
+
+# ---------- Firefox 插件（电脑版 / 安卓版 128+）----------
+# 代码和 Chrome 版完全相同，只是清单多了 Firefox 要求的 ID 和数据收集声明，去掉 Chrome 专用字段
+import json as _json
+ff = dist/'firefox-extension'
+if ff.exists(): shutil.rmtree(ff)
+shutil.copytree(ext, ff)
+man = _json.loads((ext/'manifest.json').read_text(encoding='utf-8'))
+man.pop('minimum_chrome_version', None)
+man['browser_specific_settings'] = {
+    'gecko': {'id': 'fallen-london-chronicle@dobo233', 'strict_min_version': '128.0',
+              'data_collection_permissions': {'required': ['none']}},
+    'gecko_android': {'strict_min_version': '128.0'}
+}
+(ff/'manifest.json').write_text(_json.dumps(man, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+fz = dist/'fallen-london-chronicle-firefox.zip'
+if fz.exists(): fz.unlink()
+shutil.make_archive(str(fz.with_suffix('')), 'zip', ff)
 print('ok')

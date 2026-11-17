@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "沦敦故事回顾 Fallen London Chronicle",
   "short_name": "沦敦故事回顾",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "完整记录沦敦（Fallen London）里每次选择的故事、选项与结果原文，并可导入游戏日志，导出为故事回顾阅读器格式。",
   "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
   "action": {

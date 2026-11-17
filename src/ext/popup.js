@@ -1,5 +1,7 @@
 (function () {
   'use strict';
+  // Firefox 用 browser 接口（返回 Promise），Chrome / Edge 用 chrome 接口
+  var api = (typeof browser !== 'undefined' && browser.tabs) ? browser : chrome;
   var FL_RE = /^https:\/\/(www\.)?fallenlondon\.com\//;
   var $ = function (id) { return document.getElementById(id); };
   var tab = null;
@@ -7,7 +9,7 @@
   function msg(t, err) { var m = $('msg'); m.textContent = t || ''; m.className = 'msg' + (err ? ' err' : ''); }
   function show(id) { ['on-fl', 'need-reload', 'off-fl'].forEach(function (x) { $(x).hidden = x !== id; }); }
   function inPage(fn, args) {
-    return chrome.scripting.executeScript({ target: { tabId: tab.id }, world: 'MAIN', func: fn, args: args || [] })
+    return api.scripting.executeScript({ target: { tabId: tab.id }, world: 'MAIN', func: fn, args: args || [] })
       .then(function (res) { return res && res[0] ? res[0].result : undefined; });
   }
 
@@ -42,16 +44,16 @@
       .catch(function (e) { msg(e.message, true); });
   };
 
-  function openReader() { return chrome.tabs.create({ url: chrome.runtime.getURL('reader.html') }); }
+  function openReader() { return api.tabs.create({ url: api.runtime.getURL('reader.html') }); }
 
-  chrome.tabs.query({ active: true, currentWindow: true }).then(function (tabs) {
+  api.tabs.query({ active: true, currentWindow: true }).then(function (tabs) {
     tab = tabs[0];
     if (!tab || !FL_RE.test(tab.url || '')) { show('off-fl'); $('sub').textContent = '当前不是沦敦页面'; return; }
     return refresh();
   });
 
-  $('goto').onclick = function () { chrome.tabs.create({ url: 'https://www.fallenlondon.com/' }); window.close(); };
-  $('reload').onclick = function () { chrome.tabs.reload(tab.id); window.close(); };
+  $('goto').onclick = function () { api.tabs.create({ url: 'https://www.fallenlondon.com/' }); window.close(); };
+  $('reload').onclick = function () { api.tabs.reload(tab.id); window.close(); };
   $('reader-only').onclick = function () { openReader(); window.close(); };
 
   $('open').onclick = function () { inPage(function () { return window.__FLC_API.open(); }).then(function () { window.close(); }); };

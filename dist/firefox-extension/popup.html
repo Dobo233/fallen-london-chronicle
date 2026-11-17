@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:700|Roboto:400,700&display=swap">
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <img src="icons/icon32.png" alt="">
+    <div><div class="title">沦敦故事回顾</div><div class="sub" id="sub">正在检查…</div></div>
+  </header>
+  <main>
+    <section id="on-fl" hidden>
+      <label class="switch"><input type="checkbox" id="rec"><span class="track"><span class="knob"></span></span><span id="rec-label">记录中</span></label>
+      <div class="stats" id="stats"></div>
+      <button class="primary" id="open">打开回顾面板</button>
+      <button class="primary" id="journal">导入游戏日志</button>
+      <button id="reader">在阅读器中查看全部记录</button>
+      <button id="backup">导出完整备份 JSON</button>
+    </section>
+    <section id="need-reload" hidden>
+      <p id="reload-msg">这个页面是在安装插件之前打开的，需要刷新一次才能开始记录。</p>
+      <button class="primary" id="reload">刷新页面</button>
+    </section>
+    <section id="off-fl" hidden>
+      <p>当前标签页不是沦敦。记录功能只在 fallenlondon.com 上运行。</p>
+      <button class="primary" id="goto">打开沦敦</button>
+    </section>
+    <div class="sep"></div>
+    <button class="link" id="reader-only">打开离线阅读器（查看 / 打开备份文件）</button>
+    <div class="msg" id="msg"></div>
+  </main>
+  <script src="ui.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

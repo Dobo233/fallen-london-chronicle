@@ -287,6 +287,21 @@ header .recbtn.paused { background: rgb(102, 102, 102); border-color: rgb(77, 77
 .fabrec:focus-visible, .fab:focus-visible { outline: 2px solid rgb(146, 209, 213); outline-offset: 2px; }
 @keyframes recpulse { 50% { box-shadow: 0 0 0 5px rgba(226, 54, 54, .08); } }
 @media (prefers-reduced-motion: reduce) { .fabrec .dot { animation: none; } }
+/* 拖动把手与紧凑模式 */
+.fabbar { touch-action: none; }
+.fabgrip {
+  width: 18px; display: flex; align-items: center; justify-content: center; cursor: grab; user-select: none;
+  font: 700 12px/1 system-ui, sans-serif; letter-spacing: -2px; color: rgb(237, 227, 210);
+  background: rgba(40, 37, 32, .85); border: 1px solid rgb(117, 107, 90);
+}
+.fabbar.dragging, .fabbar.dragging * { cursor: grabbing; }
+.fabbar.dragging { opacity: .85; }
+.fabbar.compact .lbl { display: none; }
+.fabbar.compact .fab, .fabbar.compact .fabrec { height: 38px; min-width: 38px; padding: 0 10px; line-height: 38px; }
+@media (max-width: 600px) {
+  .fabbar { right: 10px; bottom: 10px; gap: 4px; }
+  .fab, .fabrec { height: 40px; line-height: 40px; padding: 0 10px; }
+}
 
 /* ================= 日志本 ================= */
 header .bookbtn.on { background: rgb(252, 172, 0); border-color: rgb(186, 127, 0); color: rgb(29, 29, 29); box-shadow: inset 0 0 0 1px rgb(255, 197, 74); }
