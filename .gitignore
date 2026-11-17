@@ -1,0 +1,10 @@
+# 测试产生的截图、导出文件和临时数据
+test/*.png
+test/*.json
+test/*.md
+test/*.html
+test/*.txt
+node_modules/
+__pycache__/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,40 @@
+const { chromium } = require('playwright');
+const path = require('path'), fs = require('fs'), os = require('os');
+const EXT = path.join(__dirname, '..', 'dist', 'chrome-extension');
+const src = fs.readFileSync(path.join(__dirname, 'group-test.js'), 'utf8');
+const page = eval(src.match(/const page = (`[\s\S]*?`);/)[1]);
+eval(src.match(/const branches = [\s\S]*?const out = .*?;\n/)[0].replace(/const /g, 'global.'));
+(async () => {
+  const ctx = await chromium.launchPersistentContext(fs.mkdtempSync(path.join(os.tmpdir(), 'f-')), { channel: 'chromium', headless: true, args: [`--disable-extensions-except=${EXT}`, `--load-extension=${EXT}`] });
+  await ctx.route(/^https?:/, async route => {
+    const u = route.request().url();
+    if (u.startsWith('https://www.fallenlondon.com')) return route.fulfill({ contentType: 'text/html', body: page.replace('<main id="main"></main>', '<main id="main" style="height:2000px;background:#1d1d1d"></main>') });
+    if (u.startsWith('https://images')) return route.fulfill({ status: 404, body: '' });
+    let j = {};
+    if (u.includes('/storylet/begin')) j = global.lib;
+    else if (u.includes('/choosebranch')) { const b = JSON.parse(route.request().postData()).branchId; const o = global.out[b]; j = { phase: 'End', endStorylet: { event: { id: 9000 + b, name: o[0], description: o[2] } }, messages: [] }; }
+    else j = { phase: 'Available', storylets: [] };
+    return route.fulfill({ contentType: 'application/json', body: JSON.stringify(j), headers: { 'access-control-allow-origin': '*' } });
+  });
+  const p = await ctx.newPage(); p.on('pageerror', e => console.log('PAGEERROR', e.message));
+  await p.setViewportSize({ width: 900, height: 600 });
+  await p.goto('https://www.fallenlondon.com/'); await p.waitForTimeout(500);
+  const n = () => p.evaluate(() => window.__FLC_API.all().then(a => a.length));
+  const fr = p.locator('#flc-host >> .fabrec');
+  console.log('initial:', (await fr.textContent()), '| panel still closed:', await p.locator('#flc-host >> .overlay').evaluate(e => e.classList.contains('hidden')));
+  await p.screenshot({ path: path.join(__dirname, 'fab-on.png'), clip: { x: 600, y: 520, width: 300, height: 80 } });
+  await fr.click(); await p.waitForTimeout(200);
+  console.log('after click:', await fr.textContent(), '| recording:', await p.evaluate(() => window.__FLC_API.isRecording()), '| panel stays closed:', await p.locator('#flc-host >> .overlay').evaluate(e => e.classList.contains('hidden')));
+  await p.waitForTimeout(2800);
+  await p.screenshot({ path: path.join(__dirname, 'fab-off.png'), clip: { x: 600, y: 520, width: 300, height: 80 } });
+  await p.evaluate(() => window.pick(7988)); await p.waitForTimeout(300);
+  console.log('records after choice while paused:', await n());
+  await p.keyboard.press('Alt+k'); await p.waitForTimeout(200);
+  console.log('Alt+K ->', await fr.textContent());
+  await p.evaluate(() => window.pick(7989)); await p.waitForTimeout(300);
+  console.log('records after resuming + choice:', await n());
+  await p.evaluate(() => window.__FLC_API.open()); await p.waitForTimeout(200);
+  await fr.evaluate(e => 0);
+  console.log('panel header button in sync:', await p.locator('#flc-host >> button[data-h="rec"]').textContent());
+  await ctx.close();
+})();

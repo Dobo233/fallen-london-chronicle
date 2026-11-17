@@ -1,0 +1,392 @@
+:host { all: initial; }
+* { box-sizing: border-box; }
+.root {
+  --bg: #1d1d1d; --panel: #222222; --card: #2a2825; --line: #444037;
+  --ink: rgb(189, 178, 158); --muted: rgb(140, 130, 112); --accent: rgb(252, 172, 0); --accent2: rgb(146, 209, 213); --danger: rgb(177, 24, 24);
+  font-family: Roboto, Helvetica, Arial, "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+  color: var(--ink); font-size: 15px; line-height: 1.65;
+}
+.fabbar { position: fixed; right: 18px; bottom: 18px; z-index: 2147483000; display: flex; align-items: stretch; gap: 6px; }
+.fab {
+  min-width: 52px; height: 46px; padding: 0 16px; border-radius: 0;
+  background: rgb(66, 104, 107); color: rgb(185, 225, 228); border: 1px solid rgb(45, 82, 86);
+  box-shadow: 0 4px 16px rgba(0,0,0,.45); cursor: pointer;
+  font: 700 14px/46px "Roboto Slab", Georgia, "Noto Serif SC", serif; letter-spacing: .05em; box-shadow: inset 0 0 0 1px rgb(95,149,155), rgba(0,0,0,.5) 0 3px 6px;
+  display: flex; align-items: center; gap: 6px; user-select: none;
+}
+.fab:hover { background: rgb(82, 128, 132); }
+.fab .badge { font: 600 11px/18px system-ui, sans-serif; background: var(--accent2); color: #10201c; border-radius: 9px; padding: 0 6px; }
+.fab .badge:empty { display: none; }
+.fab.flash { animation: flash .9s ease; }
+.fab.warn { border-color: var(--danger); }
+@keyframes flash { 0% { box-shadow: 0 0 0 0 rgba(201,164,90,.9);} 100% { box-shadow: 0 0 0 16px rgba(201,164,90,0);} }
+
+.overlay { position: fixed; inset: 0; z-index: 2147483001; background: rgba(8,6,4,.72); display: flex; justify-content: center; }
+.overlay.hidden, .hidden { display: none !important; }
+.viewer .overlay { position: static; background: none; min-height: 100vh; }
+.panel { width: min(1080px, 100%); height: 100%; background: var(--bg); display: flex; flex-direction: column; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+.viewer .panel { height: auto; min-height: 100vh; }
+header { position: sticky; top: 0; z-index: 2; background: var(--panel); border-bottom: 1px solid #303030; padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+header .title { font: 700 19px "Roboto Slab", Georgia, "Noto Serif SC", serif; color: rgb(237, 227, 210); margin-right: 6px; white-space: nowrap; }
+header .count { font-size: 12px; color: var(--muted); margin-left: 6px; }
+header .grow { flex: 1 1 180px; min-width: 140px; }
+input[type=search], select, textarea {
+  background: #161616; color: rgb(237, 227, 210); border: 1px solid #444037; border-radius: 0;
+  font: inherit; font-size: 14px; padding: 5px 9px;
+}
+input[type=search] { width: 100%; }
+select { max-width: 190px; }
+button {
+  background: rgb(66, 104, 107); color: rgb(185, 225, 228); border: 1px solid rgb(45, 82, 86); border-radius: 0;
+  font: 700 12.5px "Roboto Slab", Georgia, "Noto Serif SC", serif; letter-spacing: .05em; padding: 6px 12px; cursor: pointer; white-space: nowrap;
+  box-shadow: inset 0 0 0 1px rgb(95, 149, 155);
+}
+button:hover { background: rgb(82, 128, 132); border-color: rgb(63, 114, 119); color: rgb(185, 225, 228); }
+button.primary { background: rgb(66, 104, 107); border-color: rgb(45, 82, 86); color: rgb(185, 225, 228); }
+button.danger:hover { border-color: var(--danger); color: #f2b0a4; }
+label.chk { font-size: 13px; color: var(--muted); display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; cursor: pointer; }
+.drop { position: relative; }
+.menu { position: absolute; right: 0; top: calc(100% + 4px); z-index: 5; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px; min-width: 260px; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
+.menu button { display: block; width: 100%; text-align: left; border: none; background: none; padding: 7px 10px; }
+.menu button:hover { background: #2f281d; }
+.menu .sep { border-top: 1px solid var(--line); margin: 5px 0; }
+.menu .hint { font-size: 12px; color: var(--muted); padding: 2px 10px 6px; }
+
+.settings { background: var(--panel); border-bottom: 1px solid var(--line); padding: 12px 18px; font-size: 14px; }
+.settings label { display: block; margin: 6px 0; cursor: pointer; }
+.settings .note { color: var(--muted); font-size: 12.5px; margin: 8px 0; }
+.settings .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+
+.list { flex: 1; overflow-y: auto; padding: 8px 18px 60px; }
+.viewer .list { overflow: visible; }
+.day { font-size: 13px; color: var(--accent); letter-spacing: .1em; margin: 22px 0 8px; padding-bottom: 4px; border-bottom: 1px dashed var(--line); font-weight: normal; }
+.empty { text-align: center; color: var(--muted); padding: 60px 20px; }
+.empty .big { font-size: 18px; color: var(--ink); margin-bottom: 8px; }
+.dropzone { border: 2px dashed var(--line); border-radius: 12px; padding: 40px 20px; margin: 30px auto; max-width: 560px; }
+.dropzone.over { border-color: var(--accent); background: #221d14; }
+
+.rec { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px 14px; margin: 10px 0; }
+.rec.starred { border-color: #8a6f3c; box-shadow: inset 3px 0 0 var(--accent); }
+.rec .meta { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; font-size: 12px; color: var(--muted); font-family: system-ui, "Microsoft YaHei", sans-serif; }
+.rec .meta .sp { flex: 1; }
+.rec .meta button { font-size: 12px; padding: 2px 8px; }
+.rec .meta button.on { color: #f0d79c; border-color: var(--accent); }
+.rec .crumb { margin-top: 6px; font-size: 14px; color: var(--accent2); }
+.rec .crumb .br { color: var(--ink); }
+.rec .crumb .arrow { color: var(--muted); margin: 0 4px; }
+.rec h3 { margin: 8px 0 4px; font-size: 18px; font-weight: 600; color: #f0d79c; }
+.rec h3 .tag { font-size: 11px; font-weight: normal; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; margin-left: 8px; vertical-align: middle; }
+.rec .tabs { display: flex; gap: 6px; margin: 6px 0 2px; }
+.rec .tabs button { font-size: 12px; padding: 2px 9px; }
+.rec .tabs button.on { background: #4a3a1c; color: #f0d79c; border-color: #8a6f3c; }
+.rec .body { white-space: normal; overflow-wrap: anywhere; }
+.rec .body p { margin: .5em 0; }
+.rec .body.pre { white-space: pre-wrap; }
+.rec details { margin-top: 6px; font-size: 14px; }
+.rec details summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+.rec details .sub { border-left: 2px solid var(--line); padding: 2px 0 2px 12px; margin: 6px 0; color: #d4c8ae; }
+.rec details .sub b { color: var(--accent2); font-weight: normal; }
+.rec .msgs { margin: 8px 0 0; padding: 8px 12px; list-style: none; background: #1d1913; border-radius: 6px; font-size: 13.5px; color: #d4c8ae; }
+.rec .msgs li { padding: 2px 0; }
+.rec .msgs li + li { border-top: 1px dotted #3a3226; }
+.rec textarea.note { width: 100%; min-height: 54px; margin-top: 8px; resize: vertical; }
+.rec .notetext { margin-top: 8px; padding: 6px 10px; border-left: 3px solid var(--accent2); background: #1d1913; font-size: 13.5px; white-space: pre-wrap; }
+.rec pre.raw { max-height: 360px; overflow: auto; background: #0e0c09; color: #b9d1c8; font: 12px/1.45 Consolas, monospace; padding: 10px; border-radius: 6px; white-space: pre-wrap; word-break: break-all; }
+mark { background: #6b5320; color: #fff2cc; border-radius: 2px; }
+.more { display: block; margin: 16px auto; }
+.toast { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 2147483002; background: #2f281d; color: #f0d79c; border: 1px solid #8a6f3c; padding: 8px 16px; border-radius: 8px; font: 14px system-ui, "Microsoft YaHei", sans-serif; box-shadow: 0 6px 18px rgba(0,0,0,.5); }
+@media (max-width: 640px) {
+  header { padding: 8px 10px; }
+  .list { padding: 6px 10px 60px; }
+  select { max-width: 46vw; }
+}
+
+/* ================= 沦敦风格视图（按 fallenlondon.com 登录后页面的实测样式） ================= */
+.list.flview {
+  --fl-paper: rgb(237, 227, 210); --fl-tab: rgb(189, 178, 158); --fl-frame: rgb(137, 125, 103);
+  --fl-ink: rgb(40, 37, 32); --fl-muted: rgb(117, 107, 90); --fl-shadow: rgb(145, 133, 110) 0 2px 3px 0;
+  --fl-teal: rgb(66, 104, 107); --fl-teal-b: rgb(45, 82, 86); --fl-teal-t: rgb(185, 225, 228); --fl-link: rgb(63, 114, 119);
+  --fl-slab: "Roboto Slab", Georgia, Times, "Noto Serif SC", "Source Han Serif SC", "SimSun", serif;
+  --fl-sans: Roboto, Helvetica, Arial, "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+  background: #1d1d1d; color: var(--fl-ink);
+  font-family: var(--fl-sans); font-size: 14px; line-height: 1.45;
+  padding: 16px 12px 80px;
+}
+/* .tab-content + .tab-content__bordered-container */
+.flview .fl-tab { position: relative; z-index: 0; max-width: 750px; margin: 0 auto; padding: 16px; }
+.flview .fl-tab::before {
+  content: ""; position: absolute; inset: 0; z-index: -2; filter: brightness(.95);
+  background: var(--fl-tab) url("https://images.fallenlondon.com/static/bg-paper-dark.png");
+}
+.flview .fl-tab::after { content: " "; position: absolute; inset: 4px; z-index: -1; border: 2px solid var(--fl-frame); pointer-events: none; }
+/* .heading--3.heading--hr */
+.flview .day {
+  font: 700 16.8px/1.45 var(--fl-slab); color: var(--fl-ink); letter-spacing: 0; text-align: left;
+  border: none; border-bottom: 2px solid var(--fl-muted); padding-bottom: .25em; margin: 1.5em 0 1em;
+}
+.flview .day:first-child { margin-top: 0; }
+.flview .empty { color: var(--fl-ink); }
+.flview .more { display: block; margin: 20px auto 0; }
+
+/* 记录之间：游戏的 hr */
+.flview .rec.fl { background: none; border: none; border-radius: 0; padding: 0; margin: 0; box-shadow: none; }
+.flview .rec.fl + .rec.fl { margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--fl-tab); box-shadow: inset 0 1px 0 rgb(43, 43, 43); }
+.flview .rec .meta { color: var(--fl-muted); font: 12.5px var(--fl-sans); padding: 0 0 8px; }
+
+/* .button：Roboto Slab 700 13px 大写 */
+.flview button, .fl-btn {
+  display: inline-block; font: 700 12px/1.38 var(--fl-slab); letter-spacing: .05em; text-transform: uppercase;
+  padding: 4px 11px; border-radius: 0; border: 1px solid var(--fl-teal-b); cursor: pointer;
+  color: var(--fl-link); background: transparent; box-shadow: none;
+}
+.flview button:hover { color: #000; }
+.flview .rec .meta button { font-size: 11.5px; padding: 3px 9px; }
+.flview .rec .meta button.on { color: rgb(29, 29, 29); background: rgb(252, 172, 0); border-color: rgb(186, 127, 0); box-shadow: inset 0 0 0 1px rgb(255, 197, 74); }
+.flview .rec .meta button.danger:hover { color: rgb(236, 161, 161); background: rgb(177, 24, 24); border-color: rgb(90, 15, 15); }
+/* .button--primary */
+.flview .more, .fl-btn {
+  color: var(--fl-teal-t); background: var(--fl-teal); border: 1px solid var(--fl-teal-b);
+  box-shadow: inset 0 0 0 1px rgb(95, 149, 155), rgba(0, 0, 0, .5) 0 1px 2px 0;
+  padding: 10px 20px; font-size: 13px; line-height: normal;
+}
+.flview .more:hover { color: var(--fl-teal-t); background: rgb(82, 128, 132); border-color: var(--fl-link); }
+.fl-btn { cursor: default; }
+
+/* .media--root */
+.fl-root {
+  display: flex; position: relative; padding: 8px; color: var(--fl-ink);
+  background-color: var(--fl-paper);
+  background-image: url("https://images.fallenlondon.com/static/bg-paper-watermark.png"), url("https://www.fallenlondon.com/img/bg-paper.png");
+  background-position: 0 100%, 0 100%; background-repeat: no-repeat, repeat;
+  box-shadow: var(--fl-shadow);
+}
+.fl-storylet { margin-bottom: 0; }
+.fl-left { flex: none; padding: 0 10px 10px 0; }
+.fl-left:has(> .noimg) { display: none; }
+.fl-rootimg img { display: block; width: 93px; height: auto; }
+.fl-body { flex: 1 1 0%; min-width: 0; }
+.fl-h2 { margin: 0 40px 0 0; font: 700 20.16px/1.45 var(--fl-slab); color: var(--fl-ink); hyphens: auto; }
+.fl-h3 { margin: 0 40px 0 0; font: 700 16.8px/1.45 var(--fl-slab); color: var(--fl-ink); }
+.fl-desc { overflow-wrap: anywhere; hyphens: auto; }
+.fl-desc p { margin: 0 0 7px; text-align: justify; }
+.fl-desc p:last-child { margin-bottom: 0; }
+.fl-desc a { color: var(--fl-link); }
+.fl-desc.clamp { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+.flview .fl-link { border: none; padding: 4px 0 0; color: var(--fl-link); text-transform: none; letter-spacing: 0; font: 700 13px var(--fl-sans); }
+.flview .fl-link:hover { color: rgb(37, 66, 69); }
+.flview .rec.fl.starred .fl-root { box-shadow: var(--fl-shadow), inset 0 0 0 2px rgb(252, 172, 0); }
+
+/* .branch.media--branch：缩进 8px，图在小卡片里 */
+.fl-branch {
+  display: flex; margin: 16px 0 0 8px; padding: 8px; color: var(--fl-ink);
+  background: var(--fl-paper) url("https://images.fallenlondon.com/static/bg-paper.png");
+  box-shadow: var(--fl-shadow);
+}
+.fl-branch .fl-left { padding: 0 10px 0 0; }
+.fl-card { box-shadow: rgba(0, 0, 0, .12) 0 1px 3px, rgba(0, 0, 0, .24) 0 1px 2px; }
+.fl-card img { display: block; width: 76px; height: 99px; }
+.fl-branch .fl-desc p, .fl-branch .fl-desc { margin-top: 0; }
+.fl-buttons { display: flex; justify-content: flex-end; padding-top: 8px; }
+
+/* 结果 */
+.fl-outcome { margin-top: 16px; }
+.fl-outcome .tabs { margin: 4px 0 6px; }
+.flview .rec .tabs button { font-size: 11px; padding: 2px 9px; }
+.flview .rec .tabs button.on { color: var(--fl-teal-t); background: var(--fl-teal); border-color: var(--fl-teal-b); }
+.fl-pt { padding-top: 6px; }
+.fl-pt summary { cursor: pointer; color: var(--fl-muted); font-size: 13px; }
+
+/* .branch.media--quality-updates / .quality-update */
+.fl-qu {
+  display: flex; flex-direction: column; margin: 16px 0 0 8px; padding: 8px; color: var(--fl-ink); word-break: break-word;
+  background: var(--fl-paper) url("https://images.fallenlondon.com/static/bg-paper.png");
+  box-shadow: var(--fl-shadow);
+}
+.fl-q { display: flex; margin-bottom: 16px; }
+.fl-q:last-child { margin-bottom: 0; }
+.fl-qleft { flex: none; margin-right: 8px; width: 36px; }
+.fl-qicon { line-height: 1px; box-shadow: rgba(0, 0, 0, .6) 0 1px 2px; }
+.fl-qicon img { display: block; width: 36px; height: 36px; }
+.fl-qicon.noimg { width: 36px; height: 36px; box-shadow: none; background: rgba(117, 107, 90, .2); }
+.fl-qtext { flex: 1; min-width: 0; }
+
+.flview .notetext { background: var(--fl-paper); border-left: 3px solid var(--fl-teal); color: var(--fl-ink); margin: 12px 0 0 8px; box-shadow: var(--fl-shadow); }
+.flview .rec textarea.note { background: #fffaf0; color: var(--fl-ink); border: 1px solid var(--fl-frame); border-radius: 0; font-family: var(--fl-sans); }
+.flview .rec pre.raw { margin-top: 12px; border-radius: 0; }
+.flview mark { background: rgb(255, 218, 138); color: #000; }
+.fl-doc-head { max-width: 750px; margin: 0 auto 14px; color: rgb(189, 178, 158); }
+.fl-doc-title { font: 700 24.19px "Roboto Slab", Georgia, "Noto Serif SC", serif; color: rgb(237, 227, 210); margin: 10px 0 2px; }
+.fl-doc-sub { color: rgb(117, 107, 90); margin: 0; }
+
+@media (max-width: 640px) {
+  .list.flview { padding: 8px 0 60px; }
+  .flview .fl-tab { padding: 12px; }
+  .fl-rootimg img { width: 62px; }
+  .fl-card img { width: 52px; height: 68px; }
+  .fl-h2, .fl-h3 { margin-right: 0; }
+}
+.flview > .empty, .flview > .empty .big { color: rgb(189, 178, 158); }
+.flview .dropzone { border-color: #444037; }
+
+.status { background: rgb(66, 104, 107); color: rgb(185, 225, 228); font-size: 13px; padding: 7px 16px; border-bottom: 1px solid rgb(45, 82, 86); }
+.rec .meta .jtag { font: 700 11px "Roboto Slab", Georgia, serif; letter-spacing: .05em; color: rgb(185, 225, 228); background: rgb(66, 104, 107); padding: 1px 7px; }
+.fl-journal { margin-top: 0; }
+.rec.fl .fl-jdate { font-size: 14px; margin: 2px 0 8px; color: var(--fl-muted); }
+.fl-jmsg, .fl-jmeta { margin-top: 8px; }
+.fl-jmeta { color: var(--fl-muted, #756b5a); font-size: 12.5px; }
+.fl-jmsg { font-style: italic; white-space: pre-wrap; }
+.rec.fl .fl-h3 { color: var(--fl-ink); margin: 0 40px 0 0; font: 700 16.8px/1.45 var(--fl-slab); }
+.rec.fl .fl-h2 { color: var(--fl-ink); }
+
+/* 全部选项：所选高亮，其余淡化（与游戏 .media--semi-transparent 类似） */
+.fl-branches .fl-branch.other { display: none; opacity: .55; }
+.fl-branches.show-all .fl-branch.other { display: flex; }
+.fl-branch.chosen { box-shadow: var(--fl-shadow), inset 3px 0 0 var(--fl-teal); }
+.fl-branch.locked { background-color: rgb(187, 187, 187); background-image: none; }
+.flview .fl-others-toggle { display: block; margin: 8px 0 0 8px; }
+.fl-btn.fl-btn--off { color: rgb(29, 29, 29); background: rgb(102, 102, 102); border-color: rgb(77, 77, 77); box-shadow: none; }
+/* 挑战说明：游戏的 .media--challenge */
+.fl-challenge { display: flex; gap: 8px; background: rgb(189, 178, 158); padding: 5px 8px 8px; margin: 8px 0 2px; }
+.fl-cicon { flex: none; line-height: 1px; box-shadow: rgba(0,0,0,.6) 0 1px 2px; border-radius: 5px; overflow: hidden; align-self: flex-start; margin-top: 3px; }
+.fl-cicon img { display: block; width: 36px; height: 36px; }
+.fl-cicon.noimg { display: none; }
+.fl-h4 { font: 700 14px/1.45 var(--fl-slab, Georgia), serif; color: var(--fl-ink, #282520); }
+.fl-cdesc { font-size: 13.5px; }
+.fl-req { font-size: 12.5px; color: rgb(80, 80, 80); margin-top: 6px; }
+.fl-jbox { border-left: 3px solid var(--fl-teal); }
+.fl-jlabel { font: 700 11px "Roboto Slab", Georgia, serif; letter-spacing: .08em; color: var(--fl-teal, #42686b); margin-bottom: 2px; }
+.rec.fl .fl-jbox .fl-h3 { margin: 0; }
+
+/* 同一故事的多次选择合并成一张故事卡 */
+.flview .fl-tab > .fl-group + .rec.fl, .flview .fl-tab > .rec.fl + .fl-group, .flview .fl-tab > .fl-group + .fl-group {
+  margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--fl-tab); box-shadow: inset 0 1px 0 rgb(43, 43, 43);
+}
+.fl-group .fl-gmeta { color: var(--fl-muted); font: 12.5px var(--fl-sans); padding: 0 0 8px; }
+.fl-gmeta .gcount { font: 700 11px "Roboto Slab", Georgia, serif; color: rgb(185, 225, 228); background: rgb(66, 104, 107); padding: 1px 7px; }
+.flview .fl-group .rec.fl.sub { margin: 22px 0 0; padding: 0; border: none; box-shadow: none; }
+.fl-pick { font: 700 15px/1.4 var(--fl-slab); color: var(--fl-ink); border-bottom: 2px solid var(--fl-muted); padding-bottom: 3px; margin-bottom: 6px; }
+.fl-pick-n { display: inline-block; font-size: 11.5px; letter-spacing: .05em; color: rgb(185, 225, 228); background: rgb(66, 104, 107); padding: 1px 8px; margin-right: 8px; vertical-align: 2px; }
+.fl-group .rec.sub .meta { padding-bottom: 6px; }
+.fl-group .rec.sub .fl-outcome { margin-top: 0; }
+
+/* 记录开关 */
+header .recbtn { min-width: 86px; }
+header .recbtn.paused { background: rgb(102, 102, 102); border-color: rgb(77, 77, 77); color: rgb(29, 29, 29); box-shadow: none; }
+/* 右下角的记录开关 */
+.fabrec {
+  height: 46px; padding: 0 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; border-radius: 0;
+  font: 700 13px "Roboto Slab", Georgia, "Noto Serif SC", serif; letter-spacing: .03em;
+  background: rgb(40, 37, 32); color: rgb(237, 227, 210); border: 1px solid rgb(117, 107, 90);
+  box-shadow: inset 0 0 0 1px rgba(237, 227, 210, .12), rgba(0, 0, 0, .5) 0 3px 6px;
+}
+.fabrec:hover { background: rgb(58, 54, 47); color: rgb(237, 227, 210); border-color: rgb(137, 125, 103); }
+.fabrec .dot { width: 10px; height: 10px; border-radius: 50%; background: rgb(226, 54, 54); box-shadow: 0 0 0 3px rgba(226, 54, 54, .25); animation: recpulse 1.8s ease-in-out infinite; }
+.fabrec .bars { font-size: 11px; letter-spacing: -1px; }
+.fabrec.paused { background: rgb(102, 102, 102); color: rgb(29, 29, 29); border-color: rgb(77, 77, 77); box-shadow: rgba(0, 0, 0, .5) 0 3px 6px; }
+.fabrec.paused:hover { background: rgb(120, 120, 120); color: rgb(29, 29, 29); }
+.fabrec:focus-visible, .fab:focus-visible { outline: 2px solid rgb(146, 209, 213); outline-offset: 2px; }
+@keyframes recpulse { 50% { box-shadow: 0 0 0 5px rgba(226, 54, 54, .08); } }
+@media (prefers-reduced-motion: reduce) { .fabrec .dot { animation: none; } }
+
+/* ================= 日志本 ================= */
+header .bookbtn.on { background: rgb(252, 172, 0); border-color: rgb(186, 127, 0); color: rgb(29, 29, 29); box-shadow: inset 0 0 0 1px rgb(255, 197, 74); }
+header.booksmode .grow, header.booksmode .f-char, header.booksmode .f-story, header.booksmode .chk,
+header.booksmode .view, header.booksmode .sort, header.booksmode .drop { display: none; }
+.books { flex: 1; min-height: 0; display: flex; }
+.viewer .books { min-height: calc(100vh - 60px); }
+.bside { width: 240px; flex: none; overflow-y: auto; background: #222; border-right: 1px solid #303030; padding: 8px 8px 40px; }
+.bside-h { font: 700 11px "Roboto Slab", Georgia, serif; letter-spacing: .12em; color: rgb(117, 107, 90); margin: 14px 8px 6px; }
+.bside-h:first-child { margin-top: 6px; }
+.bitem, .bnew {
+  display: flex; align-items: center; gap: 9px; width: 100%; text-align: left; margin: 2px 0; padding: 6px 8px;
+  background: transparent; border: none; border-left: 3px solid transparent; box-shadow: none; border-radius: 0;
+  color: rgb(189, 178, 158); font: 14px/1.3 Roboto, "Noto Sans SC", "Microsoft YaHei", sans-serif; letter-spacing: 0; white-space: normal;
+}
+.bitem:hover, .bnew:hover { background: #2c2a26; color: rgb(237, 227, 210); border-color: transparent; }
+.bitem.on { background: #2f2c27; color: rgb(237, 227, 210); border-left-color: rgb(95, 149, 155); }
+.bcover { flex: none; width: 26px; height: 26px; object-fit: cover; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; box-shadow: rgba(0,0,0,.6) 0 1px 2px; background: #1d1d1d; }
+.bname { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.bnum { font-size: 12px; color: rgb(117, 107, 90); }
+.bnew { color: rgb(146, 209, 213); font-weight: 700; }
+.bmain { flex: 1; min-width: 0; }
+.bhead { margin-bottom: 18px; }
+.flview .btitle { display: block; width: 100%; background: transparent; border: none; border-bottom: 2px solid transparent; border-radius: 0; padding: 2px 0;
+  font: 700 24.19px/1.3 var(--fl-slab); color: var(--fl-ink); }
+.flview input.btitle:hover { border-bottom-color: rgba(117, 107, 90, .4); }
+.flview input.btitle:focus { outline: none; border-bottom-color: var(--fl-teal); }
+.flview .bdesc { display: block; width: 100%; margin-top: 6px; background: rgba(237, 227, 210, .55); color: var(--fl-ink); border: 1px solid rgba(137, 125, 103, .5); border-radius: 0; font: 14px/1.45 var(--fl-sans); resize: vertical; }
+.btools { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+.btools .sp { flex: 1; }
+.bstat { color: var(--fl-muted); font-size: 13px; }
+.flview .btools button.danger:hover { color: rgb(236, 161, 161); background: rgb(177, 24, 24); border-color: rgb(90, 15, 15); }
+.chap { margin-bottom: 30px; }
+.flview .chap-h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-top: 0; }
+.chap-n { font: 700 12px var(--fl-slab); letter-spacing: .06em; color: rgb(185, 225, 228); background: rgb(66, 104, 107); padding: 2px 9px; align-self: center; }
+.chap-name { flex: 1; min-width: 0; }
+.chap-tools { display: flex; gap: 4px; }
+.flview .chap-tools button { font-size: 11.5px; padding: 2px 8px; }
+.flview .chap-tools button:disabled { opacity: .35; cursor: default; }
+.bsugg, .bline { background: var(--fl-paper) url("https://images.fallenlondon.com/static/bg-paper.png"); box-shadow: var(--fl-shadow); padding: 10px 12px; margin: 16px 0 0; border-left: 3px solid var(--fl-teal); }
+.rec.fl .bsugg .fl-h3, .bsugg .fl-h3 { margin: 0; }
+.brow { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px dotted rgba(117, 107, 90, .5); }
+.bsugg .brow:first-of-type, .fl-tab > .brow:first-of-type { border-top: none; }
+.fl-tab > .brow { background: var(--fl-paper); padding: 8px 10px; margin-top: 6px; box-shadow: var(--fl-shadow); border-top: none; }
+.brow-t { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.brow-t b { font: 700 15px/1.35 var(--fl-slab); color: var(--fl-ink); }
+.brow-t span { font-size: 12.5px; color: var(--fl-muted); }
+.bline-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.bstep { display: inline-flex; align-items: center; gap: 6px; background: rgba(189, 178, 158, .45); padding: 4px 8px 4px 4px; }
+.bstep > span { display: flex; flex-direction: column; font: 700 13.5px/1.3 var(--fl-slab); color: var(--fl-ink); }
+.bstep small { font: 12px var(--fl-sans); color: var(--fl-muted); }
+.bline .arrow { color: var(--fl-muted); font-size: 18px; }
+.flview .btitle.static { cursor: default; }
+/* 卡片上的日志本标记与菜单 */
+.bchips { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.bchip { font: 700 11px/1.6 "Roboto Slab", Georgia, "Noto Serif SC", serif; color: rgb(40, 37, 32); background: rgb(237, 227, 210); border: 1px solid rgb(137, 125, 103); padding: 0 6px; }
+.fl-gmeta { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+.fl-gmeta .sp { flex: 1; }
+.flview .fl-gmeta button { font-size: 11.5px; padding: 3px 9px; }
+.bmenu { position: fixed; z-index: 2147483003; min-width: 230px; max-width: 320px; max-height: 60vh; overflow-y: auto; padding: 6px;
+  background: rgb(237, 227, 210); color: rgb(40, 37, 32); border: 1px solid rgb(137, 125, 103); box-shadow: rgba(0, 0, 0, .5) 0 6px 18px;
+  font: 14px/1.4 Roboto, "Noto Sans SC", "Microsoft YaHei", sans-serif; }
+.bmenu-h { font: 700 12px "Roboto Slab", Georgia, serif; letter-spacing: .08em; color: rgb(117, 107, 90); padding: 4px 6px 6px; }
+.bmenu label { display: flex; gap: 8px; align-items: center; padding: 5px 6px; cursor: pointer; }
+.bmenu label:hover { background: rgba(189, 178, 158, .5); }
+.bmenu-empty { color: rgb(117, 107, 90); padding: 4px 6px 8px; font-size: 13px; }
+.bmenu button { display: block; width: 100%; margin-top: 4px; text-align: left; }
+@media (max-width: 720px) {
+  .books { flex-direction: column; }
+  .bside { width: auto; max-height: 34vh; border-right: none; border-bottom: 1px solid #303030; padding-bottom: 8px; }
+}
+
+/* ================= 译文与重复合并 ================= */
+.trtext { white-space: normal; }
+.trdual { margin-top: 6px; padding: 6px 10px; border-left: 3px solid rgb(66, 104, 107); background: rgba(66, 104, 107, .09); color: rgb(40, 37, 32); white-space: normal; }
+.trsub { display: block; font-size: .78em; font-weight: 700; color: rgb(66, 104, 107); margin-top: 1px; }
+.fl-qtext .trdual { margin-top: 3px; padding: 3px 8px; }
+.fl-pick-x { display: inline-block; margin-left: 8px; font: 700 11.5px var(--fl-sans, sans-serif); color: rgb(117, 107, 90); vertical-align: 1px; }
+.fl-block { margin-top: 22px; }
+.fl-block > .fl-pick { margin-top: 0; }
+.flview .fl-group .fl-block .rec.fl.sub { margin-top: 0; }
+.fl-rep-note { margin: 8px 0 0 8px; font-size: 12.5px; color: rgb(117, 107, 90); font-style: italic; }
+.flview .fl-group .rec.fl.sub.mini { margin: 10px 0 0 8px; padding: 6px 0 0 10px; border-left: 2px solid rgba(117, 107, 90, .45); }
+.fl-rep-h { font: 700 13px var(--fl-slab, Georgia), serif; color: rgb(66, 104, 107); }
+.rec.mini .fl-qu { margin-top: 6px; }
+header select.lang { max-width: 90px; }
+.fl-pick .trsub { display: inline; margin-left: 6px; font-size: .85em; }
+
+/* 解锁条件（游戏的 .quality-requirement） */
+.fl-buttons { align-items: center; gap: 6px; flex-wrap: wrap; }
+.fl-reqicons { display: inline-flex; flex-wrap: wrap; gap: 4px; margin-right: 4px; }
+.fl-reqicon { display: inline-block; line-height: 1px; border-radius: 5px; box-shadow: rgba(0,0,0,.6) 0 1px 2px; cursor: help; }
+.fl-reqicon img { display: block; width: 32px; height: 32px; border-radius: 5px; }
+.fl-reqicon.locked { box-shadow: 0 0 0 2px rgb(206, 28, 28), rgba(0,0,0,.6) 0 1px 2px; }
+.fl-reqicon.locked img { opacity: .55; }
+.fl-reqdot { display: block; width: 32px; height: 32px; border-radius: 5px; background: rgba(117, 107, 90, .35); }
+.fl-reqlist { list-style: none; margin: 6px 0 0; padding: 0; font-size: 12.5px; color: rgb(85, 78, 66); }
+.fl-reqlist li { padding: 1px 0; }
+.fl-reqlist li.locked { color: rgb(160, 30, 30); }
+.fl-reqlist .quality-name { font-weight: 700; }
+.fl-streq { clear: both; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 6px; margin-top: 6px; }
+.fl-streq .fl-reqlist { margin: 0; }
+.fl-segnote { margin: 26px 0 12px; padding: 4px 10px; font: 700 12.5px var(--fl-slab, Georgia), "Noto Serif SC", serif; color: rgb(185, 225, 228); background: rgb(66, 104, 107); display: inline-block; }
