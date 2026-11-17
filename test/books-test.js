@@ -15,7 +15,7 @@ window.flow = async function(){
 };
 </script></body></html>`;
 const st = (id, name, img, bids) => ({ id, name, image: img, description: name + ' — the opening text of this storylet.', childBranches: bids.map(b => ({ id: b, name: 'Option ' + b, description: 'Do option ' + b + '.', challenges: [] })) });
-const S = { 100: st(100, 'The Velvet Letter', 'letter', [101, 102]), 200: st(200, 'A Meeting at Midnight', 'candle', [201, 202]), 300: st(300, 'The Velvet Conclusion', 'rose', [301]), 400: st(400, 'Hunt Bees in Old Newgate', 'beetle', [401]) };
+const S = { 100: st(100, 'The Velvet Letter', 'letter', [101, 102]), 200: st(200, 'A Meeting at Midnight', 'candle', [201, 202]), 300: st(300, 'The Velvet Conclusion', 'rose', [301]), 400: st(400, 'Count the Pigeons on the Roof', 'beetle', [401]) };
 (async () => {
   const ctx = await chromium.launchPersistentContext(fs.mkdtempSync(path.join(os.tmpdir(), 'b-')), { channel: 'chromium', headless: true, acceptDownloads: true, args: [`--disable-extensions-except=${EXT}`, `--load-extension=${EXT}`] });
   await ctx.route(/^https?:/, async route => {
@@ -48,7 +48,7 @@ const S = { 100: st(100, 'The Velvet Letter', 'letter', [101, 102]), 200: st(200
   console.log('book chapters:', JSON.stringify(await H('.chap-name').allInnerTexts()));
   // 回到记录列表，把故事 D 手动收进这本日志
   await H('button[data-h="books"]').click(); await p.waitForTimeout(300);
-  const dCard = H('.rec.fl:has(.fl-h2:text("Hunt Bees in Old Newgate"))').first();
+  const dCard = H('.rec.fl:has(.fl-h2:text("Count the Pigeons on the Roof"))').first();
   await dCard.locator('button[data-a="book"]').click(); await p.waitForTimeout(200);
   await H('.bmenu input[type=checkbox]').first().check(); await p.waitForTimeout(400);
   console.log('chip on D card:', await dCard.locator('.bchip').allInnerTexts());

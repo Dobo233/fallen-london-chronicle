@@ -13,16 +13,16 @@ window.play = async function(){
 };
 </script></body></html>`;
 const LONG = 'A'.repeat(20) + Array.from({length: 300}, (_, i) => ' sentence ' + i + '.').join('') + ' END-MARK';
-const begin = { phase: 'In', storylet: { name: 'A library of your own', description: 'Books.', image: 'library', id: 18146,
+const begin = { phase: 'In', storylet: { name: 'A Shelf of Old Ledgers', description: 'Books.', image: 'library', id: 18146,
   childBranches: [
-    { name: 'Diligent research', description: 'Read until the candles gutter.', image: 'eyebrow', id: 7988, actionCost: 1, buttonText: 'Go', isLocked: false,
+    { name: 'Read the ledgers carefully', description: 'Read until the candles gutter.', image: 'eyebrow', id: 7988, actionCost: 1, buttonText: 'Go', isLocked: false,
       challenges: [{ name: 'A <em class="diff0">straightforward</em> challenge', description: 'Your Watchful quality gives you a 100% chance of success.', image: 'owl', category: 'Watchful', type: 'Skill', targetNumber: 50 }], qualityRequirements: [] },
     { name: 'Skim the marginalia', description: 'Someone has written in the margins.', image: 'book', id: 7989, isLocked: false, challenges: [], qualityRequirements: [] },
     { name: 'Consult the forbidden index', description: 'You would need a Key.', image: 'key', id: 7990, isLocked: true, challenges: [],
       qualityRequirements: [{ qualityName: 'Archive Key', tooltip: 'You need at least 1 Archive Key (you have 0)', image: 'key', status: 'Locked' }] }
   ] }, isSuccess: true };
 const choose = { phase: 'End', isSuccess: true, setting: { name: 'The Fifth City', id: 2 },
-  endStorylet: { rootEventId: 18146, event: { name: 'An unpleasant dream', description: LONG, image: 'flames', id: 18153 }, isLinkingEvent: false },
+  endStorylet: { rootEventId: 18146, event: { name: 'A puzzling entry', description: LONG, image: 'flames', id: 18153 }, isLinkingEvent: false },
   messages: [{ type: 'DifficultyRollFailureMessage', message: 'You failed a Watchful challenge!', image: 'cardfan' }, { type: 'X', message: 'Watchful is increasing...', image: 'owl' }] };
 const share = (id, n) => ({ id, eventName: 'Journal event ' + n, areaName: 'Veilgarden', fallenLondonDateTime: n + 'th Jun 1897', playerMessage: 'Saved text number ' + n + ' <i>with markup</i>', tags: [] });
 let authSeen = [];
@@ -44,7 +44,7 @@ let authSeen = [];
       else if (u.includes('/journal')) {
         authSeen.push(route.request().headers()['authorization']);
         const p = +new URL(u).searchParams.get('page');
-        j = p === 1 ? { shares: [{ id: 12, eventName: 'An unpleasant dream', areaName: 'The Fifth City', fallenLondonDateTime: '27th Oct 1897', playerMessage: 'An unpleasant dream', tags: [] }, share(11, 3), share(10, 2)], page: 1, pageCount: 2, hasPrevious: false, hasNext: true }
+        j = p === 1 ? { shares: [{ id: 12, eventName: 'A puzzling entry', areaName: 'The Fifth City', fallenLondonDateTime: '27th Oct 1897', playerMessage: 'A puzzling entry', tags: [] }, share(11, 3), share(10, 2)], page: 1, pageCount: 2, hasPrevious: false, hasNext: true }
                     : { shares: [share(9, 1)], page: 2, pageCount: 2, hasPrevious: true, hasNext: false };
       }
       return route.fulfill({ contentType: 'application/json', body: JSON.stringify(j), headers: h });
@@ -60,7 +60,7 @@ let authSeen = [];
   console.log('API present:', await p.evaluate(() => !!window.__FLC_API && window.__FLC_API.version));
   await p.evaluate(() => window.play());
   await p.waitForTimeout(2500);
-  await p.evaluate(() => window.share({ contentClass: 'EventConclusion', contentKey: '18153', image: 'flames', message: 'An unpleasant dream' }));
+  await p.evaluate(() => window.share({ contentClass: 'EventConclusion', contentKey: '18153', image: 'flames', message: 'A puzzling entry' }));
   await p.waitForTimeout(800);
   const r1 = await p.evaluate(() => window.__FLC_API.importJournal());
   console.log('journal import:', JSON.stringify(r1), 'auth header:', authSeen[0]);

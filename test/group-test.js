@@ -14,12 +14,12 @@ window.other = async function(){
 };
 </script></body></html>`;
 const branches = [
-  { name: 'Diligent research', description: 'Read until the candles gutter.', image: 'eyebrow', id: 7988, challenges: [{ name: 'A <em>straightforward</em> challenge', description: 'Your Watchful quality gives you a 100% chance of success.', image: 'owl' }], qualityRequirements: [] },
+  { name: 'Read the ledgers carefully', description: 'Read until the candles gutter.', image: 'eyebrow', id: 7988, challenges: [{ name: 'A <em>straightforward</em> challenge', description: 'Your Watchful quality gives you a 100% chance of success.', image: 'owl' }], qualityRequirements: [] },
   { name: 'Skim the marginalia', description: 'Someone has written in the margins.', image: 'book', id: 7989, challenges: [], qualityRequirements: [] },
   { name: 'Consult the forbidden index', description: 'You would need a Key.', image: 'key', id: 7990, isLocked: true, challenges: [], qualityRequirements: [{ qualityName: 'Archive Key', tooltip: 'You need at least 1 Archive Key (you have 0)' }] }];
-const lib = { phase: 'In', storylet: { name: 'A library of your own', description: 'Your shelves groan under the weight of acquired knowledge.', image: 'library', id: 18146, childBranches: branches } };
+const lib = { phase: 'In', storylet: { name: 'A Shelf of Old Ledgers', description: 'Your shelves groan under the weight of acquired knowledge.', image: 'library', id: 18146, childBranches: branches } };
 const other = { phase: 'In', storylet: { name: 'Another story', description: 'Elsewhere.', image: 'well', id: 500, childBranches: [{ id: 501, name: 'Do it', description: 'x', challenges: [] }] } };
-const out = { 7988: ['An unpleasant dream', 'flames', 'You dreamt of fire.'], 7989: ['A curious note', 'letter', 'In the margin: a name you know.'], 501: ['Done', 'well', 'Done.'] };
+const out = { 7988: ['A puzzling entry', 'flames', 'You dreamt of fire.'], 7989: ['A curious note', 'letter', 'In the margin: a name you know.'], 501: ['Done', 'well', 'Done.'] };
 (async () => {
   const ctx = await chromium.launchPersistentContext(fs.mkdtempSync(path.join(os.tmpdir(), 'g-')), { channel: 'chromium', headless: true, args: [`--disable-extensions-except=${EXT}`, `--load-extension=${EXT}`], acceptDownloads: true });
   let lastBegin = lib;
@@ -52,7 +52,7 @@ const out = { 7988: ['An unpleasant dream', 'flames', 'You dreamt of fire.'], 79
   const [dl] = await Promise.all([p.waitForEvent('download'), p.locator('#flc-host >> button[data-x="md"]').click()]);
   const f = path.join(__dirname, 'group.md'); await dl.saveAs(f);
   const md = fs.readFileSync(f, 'utf8');
-  console.log('markdown: grouped header:', /A library of your own（2 次选择）/.test(md), '| 第 2 次 section:', md.includes('#### 第 2 次：选择了「Skim the marginalia」'));
+  console.log('markdown: grouped header:', /A Shelf of Old Ledgers（2 次选择）/.test(md), '| 第 2 次 section:', md.includes('#### 第 2 次：选择了「Skim the marginalia」'));
   // 删除组内一条后，组变成单条显示
   p.on('dialog', d => d.accept());
   await p.locator('#flc-host >> .fl-group .rec.sub button[data-a="del"]').first().click(); await p.waitForTimeout(500);

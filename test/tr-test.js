@@ -1,7 +1,7 @@
 const { chromium } = require('playwright'); const path = require('path'), fs = require('fs'), os = require('os');
 const EXT = path.join(__dirname, '..', 'dist', 'chrome-extension');
 const page = `<!doctype html><html><head><meta charset="utf-8"></head><body>
-<aside class="snippet"><p id="snip">The Feast of the Exceptional Rose is coming. Lovers and spies alike prepare.</p></aside>
+<aside class="snippet"><p id="snip">A fog is rolling in from the river. The lamplighters are late tonight.</p></aside>
 <div id="app" class="tab-content__bordered-container"></div>
 <script>
 const API='https://api.fallenlondon.com/api/storylet/';
@@ -18,12 +18,12 @@ function tr(sel, delay){ setTimeout(()=>{ document.documentElement.classList.add
     ns.forEach(t=>{ const f=document.createElement('font'); f.style.verticalAlign='inherit'; f.textContent='【译】'+t.nodeValue.trim().replace(/[A-Za-z]+/g, w=>'译'.repeat(Math.min(w.length,4))); t.replaceWith(f); }); }); }, delay); }
 function translatePage(){ tr('.media--root',300); tr('.branch__title, .branch__body > div > p',1200); tr('.challenge',1800); tr('.media--quality-updates',2200); tr('#snip',2400); }
 window.begin=async()=>{ const r=await xhr(API+'begin',{eventId:700}); renderStorylet(r.storylet); translatePage(); };
-window.choose=async(id)=>{ const r=await xhr(API+'choosebranch',{branchId:id}); renderOutcome(r); document.getElementById('snip').textContent='A completely different long sidebar snippet about Hallowmas and the masked Londoners who dart through the gloomy streets, which used to be grabbed by mistake.'; translatePage(); };
+window.choose=async(id)=>{ const r=await xhr(API+'choosebranch',{branchId:id}); renderOutcome(r); document.getElementById('snip').textContent='A completely different long sidebar snippet about a parade of umbrellas in the rain, which used to be grabbed by mistake.'; translatePage(); };
 window.onwards=async()=>{ await xhr(API,{}); app().innerHTML='<div class="storylets">list</div>'; };
 </script></body></html>`;
-const ST = { id: 700, name: 'The Stone around the Heart', description: 'You contain so much lightness.', childBranches: [
-  { id: 71, name: 'Gather your life', description: 'Breath goes both ways.', challenges: [{ name: 'A straightforward challenge', description: 'Your Watchful quality gives you a 100% chance of success.' }] },
-  { id: 72, name: 'Spread your roots', description: 'Embrace more world.', challenges: [] }] };
+const ST = { id: 700, name: 'The Lantern in the Cellar', description: 'A lamp burns low in a cellar nobody remembers.', childBranches: [
+  { id: 71, name: 'Trim the wick', description: 'A small, careful task.', challenges: [{ name: 'A straightforward challenge', description: 'Your Watchful quality gives you a 100% chance of success.' }] },
+  { id: 72, name: 'Open the shutters', description: 'Let some air in.', challenges: [] }] };
 let n = 0;
 (async () => {
   const ctx = await chromium.launchPersistentContext(fs.mkdtempSync(path.join(os.tmpdir(), 't-')), { channel: 'chromium', headless: true, args: [`--disable-extensions-except=${EXT}`, `--load-extension=${EXT}`] });
@@ -33,8 +33,8 @@ let n = 0;
     if (!u.startsWith('https://api')) return route.fulfill({ status: 404, body: '' });
     let j;
     if (u.includes('/begin')) j = { phase: 'In', storylet: ST };
-    else if (u.includes('/choosebranch')) { n++; j = { phase: 'End', endStorylet: { event: { id: 7101, name: 'Inbreath', description: 'It comes: on the tallow of the wind. Home.' } },
-      messages: n === 1 ? [{ type: 'X', message: 'A song in the blood.', image: 'heart' }, { type: 'Y', message: 'Your maximum A Dance in the Bones is now 1.', image: 'bones' }, { type: 'W', message: 'You feel strangely calm.', image: 'candle' }] : [{ type: 'Z', message: "A Song in the Blood has not changed from 1.", image: 'heart' }] }; }
+    else if (u.includes('/choosebranch')) { n++; j = { phase: 'End', endStorylet: { event: { id: 7101, name: 'A steadier flame', description: 'The flame steadies, and the shadows settle back into the corners.' } },
+      messages: n === 1 ? [{ type: 'X', message: 'The flame grows brighter.', image: 'heart' }, { type: 'Y', message: 'Your maximum Lamp Oil is now 1.', image: 'bones' }, { type: 'W', message: 'You feel strangely calm.', image: 'candle' }] : [{ type: 'Z', message: "Lamp Oil has not changed from 1.", image: 'heart' }] }; }
     else j = { phase: 'Available', storylets: [] };
     return route.fulfill({ contentType: 'application/json', body: JSON.stringify(j), headers: { 'access-control-allow-origin': '*' } });
   });
@@ -56,7 +56,7 @@ let n = 0;
   const api = recs[0].messages.map(m => m.text), trm = (t.outcome || {}).messages || [];
   console.log('pairing (API order → captured translation):'); api.forEach((m, i) => console.log('   ', m.padEnd(45), '→', trm[i]));
   console.log('2nd outcome messages tr:', JSON.stringify((recs[1].tr || {}).outcome && recs[1].tr.outcome.messages));
-  console.log('snippet leaked into any tr?', JSON.stringify(recs.map(r => r.tr)).includes('Hallowmas') || JSON.stringify(recs.map(r => r.tr)).includes('译8'));
+  console.log('snippet leaked into any tr?', JSON.stringify(recs.map(r => r.tr)).includes('umbrellas'));
   // 面板：对照模式
   await p.evaluate(() => window.__FLC_API.open()); await p.waitForTimeout(400);
   const H = s => p.locator('#flc-host >> ' + s);
